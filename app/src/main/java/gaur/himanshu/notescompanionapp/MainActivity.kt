@@ -10,6 +10,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import gaur.himanshu.notescompanionapp.ui.theme.NotesCompanionAppTheme
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -30,6 +31,13 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             mainViewModel.notes.update { getALlNotes(this@MainActivity) }
+        }
+
+        lifecycleScope.launch {
+            this@MainActivity.contentResolver.observe(this@MainActivity, CONTENT_URI)
+                .collectLatest {
+                    mainViewModel.notes.update { it }
+                }
         }
 
     }

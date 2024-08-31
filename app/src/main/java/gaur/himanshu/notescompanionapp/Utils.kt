@@ -3,7 +3,12 @@ package gaur.himanshu.notescompanionapp
 import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
+import android.database.ContentObserver
 import android.net.Uri
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flowOn
 
 const val AUTHORITY = "gaur.himanshu.notesapp.provider"
 const val NOTES_TABLE = "notes"
@@ -51,5 +56,17 @@ fun ContentResolver.deleteNote(id: Int) {
     delete(deleteUri, null, null)
 }
 
+fun ContentResolver.observe(context: Context, uri: Uri) = callbackFlow<List<Note>> {
 
+    val observer = object : ContentObserver(null) {
+        override fun onChange(selfChange: Boolean, uri: Uri?) {
+            val notes = getALlNotes(context)
+            trySend(notes)
+        }
+    }
+    registerContentObserver(uri, true, observer)
 
+    awaitClose {
+        unregisterContentObserver(observer)
+    }
+}.flowOn(Dispatchers.IO)
