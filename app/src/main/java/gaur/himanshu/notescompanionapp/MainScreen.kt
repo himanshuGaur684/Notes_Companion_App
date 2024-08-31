@@ -39,6 +39,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
@@ -51,14 +52,21 @@ fun MainScreen(viewModel: MainViewModel) {
     val editNote = remember { mutableStateOf(Note(id = -1, title = "", desc = "")) }
     val isEdit = remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
     ModalBottomSheetLayout(
         modifier = Modifier.safeContentPadding(),
         sheetContent = {
             Form(note = editNote.value) { title, desc ->
                 if (isEdit.value) {
-                    TODO("update note")
+                    context.contentResolver.updateNote(
+                        editNote.value.id, title = title, desc
+                    )
+                    isEdit.value = false
+                    editNote.value = Note(id = -1, title = "", desc = "")
                 } else {
-                    TODO("insert new note")
+                    context.contentResolver.insertNote(
+                        title, desc
+                    )
                 }
                 scope.launch { sheetState.hide() }
             }
@@ -67,7 +75,7 @@ fun MainScreen(viewModel: MainViewModel) {
     ) {
 
         Scaffold(topBar = {
-            TopAppBar(title = { Text(text = "Notes App") }, actions = {
+            TopAppBar(title = { Text(text = "Notes Companion App") }, actions = {
                 IconButton(onClick = {
                     scope.launch { sheetState.show() }
                 }) {
@@ -117,7 +125,7 @@ fun MainScreen(viewModel: MainViewModel) {
                                     )
                                 }
                                 IconButton(onClick = {
-                                    TODO("delete note")
+                                    context.contentResolver.deleteNote(it.id)
                                 }) {
                                     Icon(
                                         imageVector = Icons.Default.Delete,

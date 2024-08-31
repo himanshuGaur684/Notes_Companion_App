@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
         }
 
         lifecycleScope.launch {
-            mainViewModel.notes.update { getAllNotes(this@MainActivity) }
+            mainViewModel.notes.update { getALlNotes(this@MainActivity) }
         }
 
     }
