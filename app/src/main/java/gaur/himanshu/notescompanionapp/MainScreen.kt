@@ -84,7 +84,6 @@ fun MainScreen(viewModel: MainViewModel) {
                     Text(text = "Nothing found")
                 }
             } else {
-
                 LazyColumn(
                     modifier = Modifier
                         .padding(it)
