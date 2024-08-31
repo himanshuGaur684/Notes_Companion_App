@@ -35,8 +35,8 @@ class MainActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             this@MainActivity.contentResolver.observe(this@MainActivity, CONTENT_URI)
-                .collectLatest {
-                    mainViewModel.notes.update { it }
+                .collectLatest {notes->
+                    mainViewModel.notes.update { notes }
                 }
         }
 
